@@ -2,11 +2,15 @@ package it.jaschke.alexandria.services;
 
 import android.app.IntentService;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,7 +76,15 @@ public class BookService extends IntentService {
      */
     private void fetchBook(String ean) {
 
+        Log.d(LOG_TAG,"EAN is: "+ean);
+        if(isNetworkConnected()){
+            Log.d(LOG_TAG, "Network is connected");
+        }else{
+            Log.d(LOG_TAG, "Network is  not connected");
+        }
+
         if(ean.length()!=13){
+            Log.d(LOG_TAG, "EAN lenght does not equal 13");
             return;
         }
 
@@ -94,6 +106,14 @@ public class BookService extends IntentService {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String bookJsonString = null;
+
+        if(isNetworkConnected()){
+            Log.d(LOG_TAG, "Network is connected");
+        }else{
+            Toast.makeText(this.getBaseContext(), "Unable to find Book",Toast.LENGTH_LONG).show();
+            return;
+        }
+
 
         try {
             final String FORECAST_BASE_URL = "https://www.googleapis.com/books/v1/volumes?";
@@ -128,6 +148,7 @@ public class BookService extends IntentService {
                 return;
             }
             bookJsonString = buffer.toString();
+
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error ", e);
         } finally {
@@ -155,6 +176,8 @@ public class BookService extends IntentService {
         final String CATEGORIES = "categories";
         final String IMG_URL_PATH = "imageLinks";
         final String IMG_URL = "thumbnail";
+
+        Log.d(LOG_TAG,"bookJsonString is: "+bookJsonString);
 
         try {
             JSONObject bookJson = new JSONObject(bookJsonString);
@@ -229,5 +252,13 @@ public class BookService extends IntentService {
             getContentResolver().insert(AlexandriaContract.CategoryEntry.CONTENT_URI, values);
             values= new ContentValues();
         }
+    }
+
+    private boolean isNetworkConnected(){
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        boolean isConnected = ni != null &&
+                ni.isConnectedOrConnecting();
+        return isConnected;
     }
  }
