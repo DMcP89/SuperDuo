@@ -38,6 +38,8 @@ public class scoresAdapter extends CursorAdapter
         ViewHolder mHolder = new ViewHolder(mItem);
         mItem.setTag(mHolder);
         //Log.v(FetchScoreTask.LOG_TAG,"new View inflated");
+        String description ="Scores for "+ mHolder.home_name.getText().toString() +" Vs. "+mHolder.away_name.getText().toString();
+        mItem.setContentDescription(description);
         return mItem;
     }
 
