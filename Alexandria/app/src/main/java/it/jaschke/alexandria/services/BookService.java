@@ -10,7 +10,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,11 +76,6 @@ public class BookService extends IntentService {
     private void fetchBook(String ean) {
 
         Log.d(LOG_TAG,"EAN is: "+ean);
-        if(isNetworkConnected()){
-            Log.d(LOG_TAG, "Network is connected");
-        }else{
-            Log.d(LOG_TAG, "Network is  not connected");
-        }
 
         if(ean.length()!=13){
             Log.d(LOG_TAG, "EAN lenght does not equal 13");
@@ -110,7 +104,9 @@ public class BookService extends IntentService {
         if(isNetworkConnected()){
             Log.d(LOG_TAG, "Network is connected");
         }else{
-            Toast.makeText(this.getBaseContext(), "Unable to find Book",Toast.LENGTH_LONG).show();
+            Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
+            messageIntent.putExtra(MainActivity.MESSAGE_KEY,getResources().getString(R.string.not_found));
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
             return;
         }
 
