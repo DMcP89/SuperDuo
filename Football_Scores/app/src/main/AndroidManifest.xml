@@ -35,12 +35,17 @@
         </activity>
         <service android:name=".service.myFetchService" />
 
-        <receiver android:name=".widget.ScoresWidgetProvider" android:label="8-bit cloud widget 1">
+        <receiver android:name=".widget.ScoresWidgetProvider" android:label="Today's Football scores">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/scores_info" />
         </receiver>
+        
+        <service
+            android:name="barqsoft.footballscores.widget.ScoresWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
 
 </manifest>
